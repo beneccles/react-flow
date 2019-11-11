@@ -101,7 +101,61 @@ export default function Flow() {
             }
         }
 
+        w.addEventListener("mousedown", mouse_down_handler);
+        w.addEventListener("touchstart", mouse_down_handler);
 
+        w.addEventListener("mouseup", mouse_up_handler);
+        w.addEventListener("touchend", touch_end_handler);
+
+        canvas.addEventListener("mousemove", mouse_move_handler);
+        canvas.addEventListener("touchmove", touch_move_handler)
+
+        w.onload = draw;
+    }
+
+    function update_particle() {
+        for (let i = 0; i < particles.length; i++){
+            // Local reference to the particles array
+            let p = particles[i];
+
+            if (p.x >= 0 && p.x < canvas_width && p.y >= 0 && p.y < canvas_height ) {
+                // Divde the X and Y values by the size of each cell.
+                // The number is then parsed to a whole number to determine which grid cell the particle is above.
+                let col = parseInt(p.x / resolution);
+                let row = parseInt(p.y / resolution);
+
+                // Store the reference to the cell.
+                let cell_data = vec_cells[col][row];
+
+
+                let ax = (p.x % resolution) / resolution;
+                let ay = (p.y % resolution) / resolution;
+
+                p.xv += (1 - ax) * cell_data.xv * 0.05;
+                p.yv += (1 - ay) * cell_data.yv * 0.05;
+
+                p.xv += ax * cell_data.right.xv * 0.05;
+                p.yv += ax * cell_data.right.yv * 0.05;
+
+                p.xv += ay * cell_data.down.xv * 0.05;
+                p.yv += ay * cell_data.down.yv * 0.05;
+
+                // Add the calculated velocity to the position coordinates of the particle.
+                p.x += p.xv;
+                p.y += p.yv;
+
+                // For each axis, this gets the distance between the old position of the particle and it's new position.
+                let dx = p.px - p.x;
+                let dy = p.py - p.y;
+
+                // Determine the distance the particle traveled.
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Generate a random value between 0 and 0.5
+                let limit = Math.random() * 0.5;
+                
+            }
+        }
     }
 
     return (
